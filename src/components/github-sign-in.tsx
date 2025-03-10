@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Github } from "lucide-react";
 import { signIn } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Github } from "@/components/ui/github";
 
 const GithubSignIn = () => {
 	return (

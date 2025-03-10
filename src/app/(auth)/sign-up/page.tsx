@@ -1,16 +1,14 @@
+import { signUp } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { GithubSignIn } from "@/components/github-sign-in";
-import { signUp } from "@/lib/actions";
-import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 
 const Page = async () => {
 	const session = await auth();
-	if (session) {
-		redirect("/");
-	}
+	if (session) redirect("/");
 
 	return (
 		<div className="w-full max-w-sm mx-auto space-y-6">

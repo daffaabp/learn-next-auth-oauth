@@ -1,27 +1,24 @@
 import { encode as defaultEncode } from "next-auth/jwt";
 import { v4 as uuid } from "uuid";
 
+import db from "@/lib/db/db";
+import { schema } from "@/lib/schema";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
-import db from "./db/db";
-import schema from "./schema";
 
 const adapter = PrismaAdapter(db);
-export const { auth, handlers, signIn } = NextAuth({
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
 	adapter,
 	providers: [
-		GitHub({
-			clientId: process.env.AUTH_GITHUB_ID,
-			clientSecret: process.env.AUTH_GITHUB_SECRET,
-		}),
+		GitHub,
 		Credentials({
 			credentials: {
 				email: {},
 				password: {},
 			},
-
 			authorize: async (credentials) => {
 				const validatedCredentials = schema.parse(credentials);
 
@@ -33,14 +30,13 @@ export const { auth, handlers, signIn } = NextAuth({
 				});
 
 				if (!user) {
-					throw new Error("Invalid credentials");
+					throw new Error("Invalid credentials.");
 				}
 
 				return user;
 			},
 		}),
 	],
-
 	callbacks: {
 		async jwt({ token, account }) {
 			if (account?.provider === "credentials") {
@@ -49,7 +45,6 @@ export const { auth, handlers, signIn } = NextAuth({
 			return token;
 		},
 	},
-
 	jwt: {
 		encode: async (params) => {
 			if (params.token?.credentials) {
